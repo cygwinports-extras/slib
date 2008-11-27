@@ -1,0 +1,32 @@
+DESCRIPTION="Library providing functions for Scheme implementations"
+HOMEPAGE="http://swissnet.ai.mit.edu/~jaffer/SLIB.html"
+SRC_URI="http://swiss.csail.mit.edu/ftpdir/scm/${P}.zip"
+SRC_DIR="${PN}"
+
+DIFF_EXCLUDES="slib.info version.txi"
+
+MAKEOPTS+=" -j1"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	cygmake \
+		prefix=/usr/ libdir=/usr/share/ infodir=/usr/share/info/
+}
+
+src_install() {
+	cd ${B}
+	dodir /usr/share/{info,man} /usr/share/guile/site /usr/bin /usr/lib
+
+	cyginstall installinfo \
+		prefix=/usr/ libdir=/usr/share/ infodir=/usr/share/info/ mandir=/usr/share/man/
+
+	insinto /usr/share/slib
+	doins *.init *.scm
+
+	dosym /usr/share/${PN} /usr/share/guile/site/slib
+	dosym /usr/share/${PN} /usr/lib/slib
+
+	sed -i -e "s#${D}##g" ${D}/usr/bin/slib
+	find ${D}/usr -type f -exec sed -i -e 's#/usr/local/#/usr/#g' '{}' +
+}
