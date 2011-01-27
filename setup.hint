@@ -1,5 +1,5 @@
-category: Scheme
-requires: guile
+category: Interpreters
+requires:
 sdesc: "Library providing functions for Scheme implementations"
 ldesc: "SLIB is a portable library for the programming language Scheme. 
 It provides a platform independent framework for using 'packages' of
