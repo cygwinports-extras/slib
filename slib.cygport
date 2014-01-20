@@ -1,5 +1,5 @@
 NAME="slib"
-VERSION=3b3
+VERSION=3b4
 RELEASE=1
 CATEGORY="Libs"
 SUMMARY="Library providing functions for Scheme implementations"
@@ -25,9 +25,20 @@ src_compile() {
 
 src_install() {
 	cd ${B}
-	cyginstall infoz INSTALL_INFO=:
-	find ${D}/usr -type f -exec sed -i -e 's#/usr/local/#/usr/#g' '{}' +
+	cygmake install-script install-lib install-man DESTDIR=${D} libslibdir=/usr/share/slib
+	sed -i -r 's,(/local)?/lib/,/share/,g' ${D}/usr/share/slib/*
 
-	dodir /usr/share/guile
-	dosym ../../lib/slib /usr/share/guile/slib
+	# avoid running makeinfo, .texi requires update for texinfo-5
+	doinfo slib.info
+
+	# not necessary for guile2.0, it will find slib in /usr/share/
+	dodir /usr/share/guile/site
+	dosym ../../slib /usr/share/guile/site/slib
 }
+
+PKG_NAMES="${NAME} guile-${NAME} guile2.0-${NAME}"
+slib_CONTENTS="usr/bin/slib usr/share/doc/ usr/share/info/ usr/share/man/ usr/share/slib/"
+guile_slib_REQUIRES=${NAME}
+guile_slib_CONTENTS="etc/p*/guile-slib.sh usr/share/guile/site/slib"
+guile2_0_slib_REQUIRES=${NAME}
+guile2_0_slib_CONTENTS="etc/p*/guile2.0-slib.sh"
