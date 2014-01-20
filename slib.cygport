@@ -1,0 +1,33 @@
+NAME="slib"
+VERSION=3b3
+RELEASE=1
+CATEGORY="Libs"
+SUMMARY="Library providing functions for Scheme implementations"
+DESCRIPTION="SLIB is a portable library for the programming language Scheme.
+It provides a platform independent framework for using 'packages' of Scheme
+procedures and syntax.  As distributed, SLIB contains useful packages for all
+Scheme implementations.  Its catalog can be transparently extended to
+accomodate packages specific to a site, implementation, user, or directory."
+HOMEPAGE="http://swissnet.ai.mit.edu/~jaffer/SLIB.html"
+SRC_URI="http://swiss.csail.mit.edu/ftpdir/scm/slib-${VERSION}.zip"
+SRC_DIR=${NAME}
+
+DIFF_EXCLUDES="slib.info version.txi"
+
+MAKEOPTS+=" -j1 SCHEME=guile"
+
+src_compile() {
+	lndirs
+	cd ${B}
+	cygconf
+	cygmake
+}
+
+src_install() {
+	cd ${B}
+	cyginstall infoz INSTALL_INFO=:
+	find ${D}/usr -type f -exec sed -i -e 's#/usr/local/#/usr/#g' '{}' +
+
+	dodir /usr/share/guile
+	dosym ../../lib/slib /usr/share/guile/slib
+}
